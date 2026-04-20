@@ -18,6 +18,38 @@
 
   --font-sans: "Geist", system-ui, sans-serif;
 
+   /* ---------- STATUS COLORS ---------- */
+
+  --color-status-open-bg: #eff6ff;
+  --color-status-open-text: #2563eb;
+
+  --color-status-closed-bg: #f3f4f6;
+  --color-status-closed-text: #6b7280;
+
+  --color-status-progress-bg: #fff7ed;
+  --color-status-progress-text: #ea580c;
+
+  --color-status-resolved-bg: #ecfdf5;
+  --color-status-resolved-text: #16a34a;
+
+  /* ---------- PRIORITY COLORS ---------- */
+
+  --color-priority-low-bg: #ecfdf5;
+  --color-priority-low-text: #16a34a;
+
+  --color-priority-medium-bg: #eff6ff;
+  --color-priority-medium-text: #2563eb;
+
+  --color-priority-high-bg: #fff7ed;
+  --color-priority-high-text: #ea580c;
+
+  --color-priority-critical-bg: #fef2f2;
+  --color-priority-critical-text: #dc2626;
+
+  /* ---------- AVATAR ---------- */
+  
+  --color-avatar-bg: #9333ea;
+  --color-avatar-text: #ffffff;
 }
 
 body {
