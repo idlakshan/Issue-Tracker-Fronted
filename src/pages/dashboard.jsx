@@ -4,6 +4,7 @@ import Table from "../components/ui/table";
 import Button from "../components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { data } from "../util/table-data";
+import TeamOverview from "../components/layout/team-overview";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -69,6 +70,12 @@ const Dashboard = () => {
             hideColumns={["created", "actions"]}
             hideFooter={true}
           />
+        </div>
+        <div className="col-span-2 space-y-3 mt-6 ">
+          <h1 className="text-lg font-semibold text-(--color-text)">
+            Team Overview
+          </h1>
+          <TeamOverview />
         </div>
       </div>
     </div>
