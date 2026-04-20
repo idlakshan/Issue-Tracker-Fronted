@@ -2,9 +2,12 @@ import { Download, Plus } from "lucide-react";
 import Button from "../ui/button";
 import { useLocation } from "react-router-dom";
 import { getAllUsers } from "../../api/user-service";
+import { useState } from "react";
+import IssueModel from "../../pages/issue-model";
 
 const Navbar = () => {
   const location = useLocation();
+  const [open, setOpen] = useState(false);
 
   const getTitle = () => {
     const path = location.pathname;
@@ -36,11 +39,13 @@ const Navbar = () => {
         <Button variant="secondary" icon={<Download size={16} onClick={getAll} />} />
 
         <div>
-          <Button variant="primary" icon={<Plus size={16} />}>
+          <Button variant="primary" icon={<Plus size={16}/>} onClick={() => setOpen(true)}>
             New Issue
           </Button>
         </div>
       </div>
+
+       <IssueModel open={open} onClose={() => setOpen(false)} />
     </header>
   );
 };
