@@ -1,14 +1,19 @@
 import { useState } from "react";
-import { Mail, Lock, ShieldHalf } from "lucide-react";
+import { ShieldHalf } from "lucide-react";
 import Input from "../components/ui/input";
 import Button from "../components/ui/button";
 import { useNavigate } from "react-router-dom";
 
-const Login = () => {
+
+const Register = () => {
   const navigate = useNavigate();
 
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -23,13 +28,39 @@ const Login = () => {
         </div>
 
         <h2 className="text-2xl font-semibold mb-1 text-(--color-text)">
-          Sign in
+          Create account
         </h2>
         <p className="text-md text-(--color-secondary-text) mb-6">
-          Enter your credentials here
+          Register as assignee
         </p>
 
-        <div className="mb-6">
+        <div className="flex gap-4">
+          <div className="mb-4">
+            <label className="text-sm font-medium text-(--color-secondary-text) mb-1 block">
+              First name
+            </label>
+            <Input
+              placeholder="Dimuthu"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className="w-full"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="text-sm font-medium text-(--color-secondary-text) mb-1 block">
+              Last name
+            </label>
+            <Input
+              placeholder="Lakshan"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className="w-full"
+            />
+          </div>
+        </div>
+
+        <div className="mb-4">
           <label className="text-sm font-medium text-(--color-secondary-text) mb-1 block">
             Email
           </label>
@@ -38,7 +69,6 @@ const Login = () => {
             placeholder="dimuthu@gmail.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            icon={<Mail size={16} />}
             className="w-full"
           />
         </div>
@@ -49,23 +79,24 @@ const Login = () => {
           </label>
           <Input
             type="password"
-            placeholder={"\u2022".repeat(8)}
+            placeholder="Min 8 characters"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            icon={<Lock size={16} />}
             className="w-full"
           />
         </div>
 
-        <Button className="w-full mb-4">Sign in</Button>
+        <Button className="w-full mb-4">
+          Create account
+        </Button>
 
         <p className="text-center text-sm text-(--color-secondary-text)">
-          No account?{" "}
+          Already have an account?{" "}
           <span
             className="text-(--color-primary) cursor-pointer"
-            onClick={() => navigate("/register")}
+            onClick={() => navigate("/")}
           >
-            Register
+            Sign in
           </span>
         </p>
       </div>
@@ -73,4 +104,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
