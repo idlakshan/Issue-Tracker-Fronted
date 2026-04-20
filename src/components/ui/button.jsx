@@ -1,6 +1,6 @@
 import React from "react";
 
-const Button = ({children,variant,icon,disabled,className,...rest}) => {
+const Button = ({children,variant = "primary",icon,disabled,className,...rest}) => {
   const styles = {
     primary:
       "bg-(--color-primary) text-(--color-primary-text) hover:bg-(--color-primary-hover)",
