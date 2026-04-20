@@ -3,12 +3,43 @@ import { Mail, Lock, ShieldHalf } from "lucide-react";
 import Input from "../components/ui/input";
 import Button from "../components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { login } from "../api/auth-service";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { setUser } from "../redux/features/auth-slice";
 
 const Login = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const handleLogin = async () => {
+    try {
+      const res = await login({ email, password });
+
+      const { user, accessToken, refreshToken } = res.data;
+
+      dispatch(
+        setUser({
+          user,
+          accessToken,
+          refreshToken,
+        }),
+      );
+
+      toast.success("Login successful");
+
+      if (user.role === "ADMIN") {
+        navigate("/admin");
+      } else {
+        navigate("/dev");
+      }
+    } catch (err) {
+      console.error("Login failed", err);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -57,7 +88,9 @@ const Login = () => {
           />
         </div>
 
-        <Button className="w-full mb-4">Sign in</Button>
+        <Button className="w-full mb-4" onClick={handleLogin}>
+          Sign in
+        </Button>
 
         <p className="text-center text-sm text-(--color-secondary-text)">
           No account?{" "}

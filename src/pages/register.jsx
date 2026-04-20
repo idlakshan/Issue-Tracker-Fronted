@@ -3,9 +3,12 @@ import { ShieldHalf } from "lucide-react";
 import Input from "../components/ui/input";
 import Button from "../components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { register } from "../api/auth-service";
 
 
 const Register = () => {
+
   const navigate = useNavigate();
 
   const [firstName, setFirstName] = useState("");
@@ -13,7 +16,20 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const handleRegister = async () => {
+    try {
+      await register({
+        firstName,
+        lastName,
+        email,
+        password,
+      }).unwrap();
 
+      toast.success("Account created");
+    } catch (err) {
+      toast.error("Registration failed", err);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -86,7 +102,7 @@ const Register = () => {
           />
         </div>
 
-        <Button className="w-full mb-4">
+        <Button className="w-full mb-4" onClick={handleRegister}>
           Create account
         </Button>
 
@@ -94,7 +110,7 @@ const Register = () => {
           Already have an account?{" "}
           <span
             className="text-(--color-primary) cursor-pointer"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/login")}
           >
             Sign in
           </span>
