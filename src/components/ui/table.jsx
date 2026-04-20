@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import { Trash, MessageSquare, SquarePen } from "lucide-react";
 import StatusBadge from "./status-badge";
 import PriorityBadge from "./priority-badge";
