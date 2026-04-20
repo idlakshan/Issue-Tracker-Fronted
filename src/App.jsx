@@ -4,6 +4,7 @@ import Login from "./pages/login";
 import Register from "./pages/register";
 import AppLayout from "./components/layout/app-layout";
 import Dashboard from "./pages/dashboard";
+import AllIssues from "./pages/all-issue";
 
 function App() {
   return (
@@ -13,7 +14,7 @@ function App() {
 
       <Route element={<AppLayout />}>
         <Route path="/admin" element={<Dashboard />} />
-        <Route path="/admin/issues" element={<div>Admin Issues</div>} />
+        <Route path="/admin/issues" element={<AllIssues />} />
         <Route path="/admin/assignees" element={<div>Admin Assignees</div>} />
       </Route>
     </Routes>
