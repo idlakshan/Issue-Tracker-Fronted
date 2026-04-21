@@ -28,7 +28,7 @@ const Register = () => {
       toast.success("Account created successfully!");
       navigate("/login");
     } catch (err) {
-      toast.error("Registration failed");
+      toast.error(err?.data?.message);
       console.error("Register Error:", err);
     }
   };
@@ -104,7 +104,7 @@ const Register = () => {
           />
         </div>
 
-        <Button className="w-full mb-4" onClick={handleRegister}></Button>
+        <Button className="w-full mb-4" onClick={handleRegister}>Register</Button>
 
         <p className="text-center text-sm text-(--color-secondary-text)">
           Already have an account?{" "}

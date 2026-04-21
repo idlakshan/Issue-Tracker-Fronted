@@ -3,7 +3,6 @@ import { Mail, Lock, ShieldHalf } from "lucide-react";
 import Input from "../components/ui/input";
 import Button from "../components/ui/button";
 import { useNavigate } from "react-router-dom";
-// import { login } from "../api/auth-service";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { setUser } from "../redux/features/auth-slice";
@@ -17,51 +16,25 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // const handleLogin = async () => {
-  //   try {
-  //     const res = await login({ email, password });
-
-  //     const { user, accessToken, refreshToken } = res.data;
-
-  //     dispatch(
-  //       setUser({
-  //         user,
-  //         accessToken,
-  //         refreshToken,
-  //       }),
-  //     );
-
-  //     toast.success("Login successful");
-
-  //     if (user.role === "ADMIN") {
-  //       navigate("/admin");
-  //     } else {
-  //       navigate("/dev");
-  //     }
-  //   } catch (err) {
-  //     console.error("Login failed", err);
-  //   }
-  // };
-
   const handleLogin = async () => {
     try {
-        const res = await login({ email, password }).unwrap();
-        console.log("Login Response:", res); // මෙතැන console එක පරීක්ෂා කරන්න දත්ත එන හැටි
+      const res = await login({ email, password }).unwrap();
+      //console.log("Login Response:", res);
 
-        // ඔබේ API එක දත්ත එවන්නේ res.data ඇතුළේ නම්:
-        const { user, accessToken, refreshToken } = res.data; 
+      const { user, accessToken, refreshToken } = res.data;
 
-        if (user && accessToken) {
-            dispatch(setUser({ user, accessToken, refreshToken }));
-            toast.success("Login successful");
-            navigate(user.role === "ADMIN" ? "/admin" : "/dev");
-        } else {
-            toast.error("Invalid response from server");
-        }
+      if (user && accessToken) {
+        dispatch(setUser({ user, accessToken, refreshToken }));
+        toast.success("Login successful");
+        navigate(user.role === "ADMIN" ? "/admin" : "/dev");
+      } else {
+        toast.error("Invalid response from server");
+      }
     } catch (err) {
-        toast.error(err?.data?.message || "Login failed");
+      console.error("Login Error:", err);
+      toast.error(err?.data?.message);
     }
-};
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center">

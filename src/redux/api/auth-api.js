@@ -1,8 +1,8 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "./base-query";
 
-export const apiSlice = createApi({
-  reducerPath: "api",
+export const authApi = createApi({
+  reducerPath: "authApi",
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
     login: builder.mutation({
@@ -19,11 +19,11 @@ export const apiSlice = createApi({
         body: userData,
       }),
     }),
-    getUsers: builder.query({
+    getAllUsers: builder.query({
       query: () => "/users",
     }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation, useLazyGetUsersQuery } =
-  apiSlice;
+
+export const { useLoginMutation, useRegisterMutation, useGetAllUsersQuery } = authApi;
