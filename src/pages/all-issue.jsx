@@ -22,7 +22,7 @@ const AllIssues = () => {
   const assigneeOptions = [
     {
       label: "All Assignees",
-      value: "ALL",
+      value: "All",
     },
     ...filteredUsers.map((user) => ({
       label: `${user.firstName} ${user.lastName}`,
@@ -32,10 +32,10 @@ const AllIssues = () => {
 
   const { data } = useGetIssuesQuery({
     page,
-    limit: 5,
-    ...(status !== "ALL" && { status }),
-    ...(priority !== "ALL" && { priority }),
-    ...(assignee !== "ALL" && { assignee }),
+    limit: 8,
+    ...(status !== "All" && { status }),
+    ...(priority !== "All" && { priority }),
+    ...(assignee !== "All" && { assignee }),
     ...(search.trim() && { search }),
   });
 

@@ -4,14 +4,15 @@ import Table from "../components/ui/table";
 import Button from "../components/ui/button";
 import { useNavigate } from "react-router-dom";
 import TeamOverview from "../components/layout/team-overview";
-import { useGetIssuesQuery } from "../redux/api/issue-api";
+import { useGetIssueCountQuery, useGetIssuesQuery } from "../redux/api/issue-api";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-
+  const {data:counts} = useGetIssueCountQuery();
+ // console.log(counts)
   const { data } = useGetIssuesQuery({
     page: 1,
-    limit: 5,
+    limit: 6,
   });
 const issues = data?.data?.issues || [];
 
@@ -20,14 +21,14 @@ const issues = data?.data?.issues || [];
       <div className="grid grid-cols-4 gap-4">
         <CountCard
           title="Total"
-          value={8}
+          value={counts?.data?.totalIssues}
           subtitle="All issues"
           icon={<ListTodo size={18} className="text-(--color-avatar-bg)" />}
         />
 
         <CountCard
           title="Open"
-          value={4}
+          value={counts?.data?.openIssues}
           subtitle="Needs attention"
           icon={<CircleDot size={18} className="text-(--color-primary)" />}
           color="text-(--color-primary)"
@@ -35,7 +36,7 @@ const issues = data?.data?.issues || [];
 
         <CountCard
           title="In Progress"
-          value={2}
+          value={counts?.data?.inProgressIssues}
           subtitle="Being worked on"
           icon={<Clock size={18} className="text-orange-500" />}
           color="text-orange-600"
@@ -43,7 +44,7 @@ const issues = data?.data?.issues || [];
 
         <CountCard
           title="Critical open"
-          value={1}
+          value={counts?.data?.criticalOpenIssues}
           subtitle="Unresolved"
           icon={
             <AlertCircle

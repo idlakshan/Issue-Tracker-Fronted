@@ -3,10 +3,12 @@ import SidebarSection from "./sidebar-section";
 import SidebarItem from "./sidebar-item";
 import UserInfo from "./user-info";
 import { useLocation } from "react-router-dom";
+import { useGetIssueCountQuery } from "../../redux/api/issue-api";
 
 const Sidebar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
+  const {data:counts} = useGetIssueCountQuery();
 
   return (
     <aside className="w-64 bg-(--color-surface) border-r border-(--color-secondary-text)/10 flex flex-col justify-between shadow-xs">
@@ -31,7 +33,7 @@ const Sidebar = () => {
             <SidebarItem
               icon={<ListTodo size={18} />}
               label="All Issues"
-              count={8}
+              count={counts?.data?.totalIssues}
               to="/admin/issues"
               active={currentPath === "/admin/issues"}
             />
