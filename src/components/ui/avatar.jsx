@@ -1,18 +1,16 @@
-import React from "react";
-
 export const Avatar = ({ assignee }) => {
+  const fullName =
+    assignee?.firstName && assignee?.lastName
+      ? `${assignee.firstName} ${assignee.lastName}`
+      : "";
 
-  //console.log(assignee);
-  
   return (
     <div className="flex items-center gap-2">
       <div className="w-7 h-7 rounded-full bg-(--color-avatar-bg) text-(--color-avatar-text) flex items-center justify-center text-[10px] font-medium">
         {assignee?.initials}
       </div>
 
-      <span className="text-sm text-(--color-text)">
-        {`${assignee.firstName} ${assignee.lastName}`}
-      </span>
+      <span className="text-sm text-(--color-text)">{fullName}</span>
     </div>
   );
 };
