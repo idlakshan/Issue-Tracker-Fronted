@@ -10,42 +10,48 @@ import {
   useUpdateIssueStatusMutation,
 } from "../redux/api/issue-api";
 import Swal from "sweetalert2";
+import { useSelector } from "react-redux";
+import {
+  useCreateCommentMutation,
+  useGetCommentsQuery,
+} from "../redux/api/comment-api";
 
 const IssueDetailsModal = ({ isOpen, onClose, issue }) => {
   //console.log(issue)
   const [updateStatus] = useUpdateIssueStatusMutation();
   const [deleteIssue] = useDeleteIssueMutation();
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      name: "Admin Name",
-      initials: "AM",
-      text: "Dimuthu Lakshan created this issue",
-      date: "2026-04-21",
-    },
-  ]);
+  const { data } = useGetCommentsQuery(issue?._id, {
+    skip: !issue?._id,
+  });
+  const [createComment] = useCreateCommentMutation();
+  const { user } = useSelector((state) => state.auth);
+
+  const comments = data?.data || [];
+
+  //console.log(data)
 
   const [newComment, setNewComment] = useState("");
   const endRef = useRef(null);
 
   //comment post function
-  const handlePost = () => {
+  const handlePost = async () => {
     if (!newComment.trim()) return;
 
-    const newItem = {
-      id: Date.now(),
-      name: "Admin Name",
-      initials: "AM",
-      text: newComment,
-      date: new Date().toLocaleString(),
-    };
+    try {
+      await createComment({
+        issueId: issue._id,
+        message: newComment,
+      }).unwrap();
 
-    setComments((prev) => [...prev, newItem]);
-    setNewComment("");
+      setNewComment("");
+      toast.success("Comment added");
 
-    setTimeout(() => {
-      endRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
+      setTimeout(() => {
+        endRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    } catch (err) {
+      toast.error("Failed to add comment", err);
+    }
   };
 
   //update issue status function
@@ -133,49 +139,42 @@ const IssueDetailsModal = ({ isOpen, onClose, issue }) => {
 
             <div>
               <p className="text-xs font-semibold text-(--color-secondary-text) mb-3">
-                ACTIVITY{" "}
-                <span className="text-xs bg-(--color-status-closed-text)/10 text-(--color-status-closed-text) px-2 py-0.5 rounded-full ml-2">
-                  {issue?.activityCount}
-                </span>
+                ACTIVITY
               </p>
 
-              {comments.map((c) => (
-                <div key={c.id} className="flex gap-3 mb-4">
-                  <Avatar assignee={{ initials: c.initials }} />
+              <div className="space-y-4  rounded-md p-3 bg-(--color-table-header)">
+                {comments.map((c) => (
+                  <div
+                    key={c._id}
+                    className="py-1 border-b border-(--color-secondary-text)/10 last:border-none"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Avatar assignee={c.sender} />
 
-                  <div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="font-medium">{c.name}</span>
-                      <span className="text-xs bg-purple-100 text-(--color-avatar-bg) px-2 py-0.5 rounded">
-                        Admin
-                      </span>
+                        <span className="text-xs px-2 py-0.5 rounded bg-(--color-avatar-bg)/10 text-(--color-avatar-bg)">
+                          {c.sender?.role.toLowerCase()}
+                        </span>
+                      </div>
+
                       <span className="text-xs text-(--color-secondary-text)">
-                        {c.date}
+                        {new Date(c.createdAt).toLocaleString("en-GB")}
                       </span>
                     </div>
 
-                    <p className="text-sm text-(--color-secondary-text) mt-1">
-                      {c.text}
+                    <p className="text-sm text-(--color-secondary-text) ml-10 leading-relaxed">
+                      {c.message}
                     </p>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
 
-              <div ref={endRef} />
-
-              <div className="flex gap-3 items-end">
-                <Avatar assignee={{ initials: "DL" }} />
-
-                <div className="flex-1 flex gap-2">
+              <div className="flex gap-3 items-end border-t border-(--color-secondary-text)/50 mt-5 mb-5">
+                <Avatar assignee={{ initials: user.initials }} />
+                <div className="flex-1 flex gap-2 mt-3">
                   <textarea
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault();
-                        handlePost();
-                      }
-                    }}
                     className="flex-1 mt-1 border border-(--color-secondary-text)/50 rounded-md px-3 py-2 text-sm outline-none resize-none"
                     placeholder="Leave a comment"
                   />
