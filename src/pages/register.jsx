@@ -5,11 +5,12 @@ import Button from "../components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useRegisterMutation } from "../redux/api/auth-api";
+import IssueDetailsModal from "./issue-details-modal";
 
 const Register = () => {
   const [register] = useRegisterMutation();
 
-  
+    const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -116,6 +117,13 @@ const Register = () => {
           </span>
         </p>
       </div>
+
+      <button onClick={() => setOpen(true)}>Open Modal</button>
+
+      <IssueDetailsModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+      />
     </div>
   );
 };
