@@ -20,12 +20,12 @@ const IssueModel = ({ open, onClose, issue }) => {
   const [createIssue] = useCreateIssueMutation();
   const [updateIssue] = useUpdateIssueMutation();
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("Open");
-  const [priority, setPriority] = useState("Medium");
-  const [severity, setSeverity] = useState("Moderate");
-  const [assignee, setAssignee] = useState("");
+  const [title, setTitle] = useState(issue?.title || "");
+  const [description, setDescription] = useState(issue?.description || "");
+  const [status, setStatus] = useState(issue?.status || "Open");
+  const [priority, setPriority] = useState(issue?.priority || "Medium");
+  const [severity, setSeverity] = useState(issue?.severity || "Moderate");
+  const [assignee, setAssignee] = useState(issue?.assignee?._id || "");
 
   const statusOptions = ISSUE_STATUS.filter((option) => option.value !== "All");
 
@@ -86,20 +86,6 @@ const IssueModel = ({ open, onClose, issue }) => {
     setAssignee("");
   };
 
-  useEffect(() => {
-    if (open) {
-      if (issue) {
-        setTitle(issue.title || "");
-        setDescription(issue.description || "");
-        setStatus(issue.status || "Open");
-        setPriority(issue.priority || "Medium");
-        setSeverity(issue.severity || "Moderate");
-        setAssignee(issue.assignee?._id || "");
-      } else {
-        resetForm();
-      }
-    }
-  }, [issue, open]);
 
   if (!open) return null;
 

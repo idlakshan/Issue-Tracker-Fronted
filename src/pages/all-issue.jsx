@@ -105,6 +105,7 @@ const AllIssues = () => {
           setSelectedIssue(null);
         }}
         issue={selectedIssue}
+        key={selectedIssue?._id || "new-issue"}
       />
     </div>
   );
