@@ -1,11 +1,43 @@
 import { X } from "lucide-react";
-import StatusBadge from "../components/ui/status-badge";
-import PriorityBadge from "../components/ui/priority-badge";
+import { useRef, useState } from "react";
 import { Avatar } from "../components/ui/avatar";
 import Button from "../components/ui/button";
+import PriorityBadge from "../components/ui/priority-badge";
+import StatusBadge from "../components/ui/status-badge";
 
 const IssueDetailsModal = ({ isOpen, onClose }) => {
-    
+  const [comments, setComments] = useState([
+    {
+      id: 1,
+      name: "Admin Name",
+      initials: "AM",
+      text: "Dimuthu Lakshan created this issue",
+      date: "2026-04-21",
+    },
+  ]);
+
+  const [newComment, setNewComment] = useState("");
+  const endRef = useRef(null);
+
+  const handlePost = () => {
+    if (!newComment.trim()) return;
+
+    const newItem = {
+      id: Date.now(),
+      name: "Admin Name",
+      initials: "AM",
+      text: newComment,
+      date: new Date().toLocaleString(),
+    };
+
+    setComments((prev) => [...prev, newItem]);
+    setNewComment("");
+
+    setTimeout(() => {
+      endRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -27,18 +59,15 @@ const IssueDetailsModal = ({ isOpen, onClose }) => {
             />
           </div>
         </div>
+
         <div className="grid grid-cols-3 flex-1 overflow-hidden">
           <div className="col-span-2 p-6 py-2 space-y-5 overflow-y-auto">
             <div>
               <h1 className="text-lg font-semibold text-(--color-text)">
                 issue
               </h1>
-
-              {/* <div className="flex gap-2 mt-2">
-                <StatusBadge status="Resolved" />
-                <PriorityBadge priority="High" />
-              </div> */}
             </div>
+
             <div>
               <p className="text-xs font-semibold text-(--color-secondary-text) mb-2">
                 DESCRIPTION
@@ -55,40 +84,55 @@ const IssueDetailsModal = ({ isOpen, onClose }) => {
               <p className="text-xs font-semibold text-(--color-secondary-text) mb-3">
                 ACTIVITY{" "}
                 <span className="text-xs bg-(--color-status-closed-text)/10 text-(--color-status-closed-text) px-2 py-0.5 rounded-full ml-2">
-                  2
+                  {comments.length}
                 </span>
               </p>
 
-              <div className="flex gap-3 mb-4">
-                <Avatar assignee={{ initials: "AM" }} />
+              {comments.map((c) => (
+                <div key={c.id} className="flex gap-3 mb-4">
+                  <Avatar assignee={{ initials: c.initials }} />
 
-                <div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="font-medium">admin Name</span>
-                    <span className="text-xs bg-purple-100 text-(--color-avatar-bg) px-2 py-0.5 rounded">
-                      Admin
-                    </span>
-                    <span className="text-xs text-(--color-secondary-text)">
-                      2026-04-21
-                    </span>
+                  <div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="font-medium">{c.name}</span>
+                      <span className="text-xs bg-purple-100 text-(--color-avatar-bg) px-2 py-0.5 rounded">
+                        Admin
+                      </span>
+                      <span className="text-xs text-(--color-secondary-text)">
+                        {c.date}
+                      </span>
+                    </div>
+
+                    <p className="text-sm text-(--color-secondary-text) mt-1">
+                      {c.text}
+                    </p>
                   </div>
-
-                  <p className="text-sm text-(--color-secondary-text) mt-1">
-                    Dimuthu Lakshan created this issue
-                  </p>
                 </div>
-              </div>
+              ))}
+
+              <div ref={endRef} />
 
               <div className="flex gap-3 items-end">
                 <Avatar assignee={{ initials: "AM" }} />
 
                 <div className="flex-1 flex gap-2">
                   <textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handlePost();
+                      }
+                    }}
                     className="flex-1 mt-1 border border-(--color-secondary-text)/50 rounded-md px-3 py-2 text-sm outline-none resize-none"
                     placeholder="Leave a comment"
                   />
 
-                  <Button className="px-3 py-1 text-sm whitespace-nowrap self-end">
+                  <Button
+                    onClick={handlePost}
+                    className="px-3 py-1 text-sm whitespace-nowrap self-end"
+                  >
                     Post
                   </Button>
                 </div>
@@ -103,7 +147,7 @@ const IssueDetailsModal = ({ isOpen, onClose }) => {
               </p>
               <div className="flex items-center gap-2">
                 <Avatar assignee={{ initials: "TB" }} />
-                <span className="text-sm font-medium">Taylor Brooks</span>
+                <span className="text-sm font-medium">Name Assignee</span>
               </div>
             </div>
 
