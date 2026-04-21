@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Input from "../components/ui/input";
 import { Dropdown } from "../components/ui/dropdown";
 import {
@@ -8,9 +8,6 @@ import {
 } from "../constants/app-constants";
 import Button from "../components/ui/button";
 import { X } from "lucide-react";
-import { toast } from "react-toastify";
-import { getAllUsers } from "../api/user-service";
-import { createIssue } from "../api/issue-service";
 
 const IssueModel = ({ open, onClose }) => {
   const [title, setTitle] = useState("");
@@ -19,7 +16,6 @@ const IssueModel = ({ open, onClose }) => {
   const [priority, setPriority] = useState("Medium");
   const [severity, setSeverity] = useState("Moderate");
   const [assignee, setAssignee] = useState("");
-  const [assigneeOptions, setAssigneeOptions] = useState([]);
 
   const statusOptions = ISSUE_STATUS.filter((option) => option.value !== "All");
 
@@ -27,57 +23,12 @@ const IssueModel = ({ open, onClose }) => {
     (option) => option.value !== "All",
   );
 
-  //fetch users and assing them
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await getAllUsers();
-
-        const filteredUsers = res.data.filter((user) => user.role !== "ADMIN");
-
-        const mapped = filteredUsers.map((user) => ({
-          label: `${user.firstName} ${user.lastName}`,
-          value: user._id,
-        }));
-
-        setAssigneeOptions(mapped);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchUsers();
-  }, []);
-
-  //create issue function
-  const handleSubmit = async () => {
-    try {
-      const res = await createIssue({
-        title,
-        description,
-        status,
-        priority,
-        severity,
-        assignee,
-      });
-
-      toast.success(res.message);
-      resetForm();
-      onClose();
-    } catch (err) {
-      toast.error(err.message);
-    }
-  };
-
-  //reset form
-  const resetForm = () => {
-    setTitle("");
-    setDescription("");
-    setStatus("Open");
-    setPriority("Medium");
-    setSeverity("Moderate");
-    setAssignee("");
-  };
+  const assigneeOptions = [
+    { label: "Unassigned", value: "" },
+    { label: "John Doe", value: "john_doe" },
+    { label: "Jane Smith", value: "jane_smith" },
+    { label: "Bob Johnson", value: "bob_johnson" },
+  ];
 
   if (!open) return null;
 
@@ -176,7 +127,7 @@ const IssueModel = ({ open, onClose }) => {
           <Button variant="secondary" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit}>Save issue</Button>
+          <Button>Save issue</Button>
         </div>
       </div>
     </div>

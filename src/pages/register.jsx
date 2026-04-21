@@ -4,13 +4,13 @@ import Input from "../components/ui/input";
 import Button from "../components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { register } from "../api/auth-service";
-
+import { useRegisterMutation } from "../redux/api/auth-api";
 
 const Register = () => {
+  const [register] = useRegisterMutation();
 
+  
   const navigate = useNavigate();
-
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -25,9 +25,11 @@ const Register = () => {
         password,
       }).unwrap();
 
-      toast.success("Account created");
+      toast.success("Account created successfully!");
+      navigate("/login");
     } catch (err) {
-      toast.error("Registration failed", err);
+      toast.error("Registration failed");
+      console.error("Register Error:", err);
     }
   };
 
@@ -102,9 +104,7 @@ const Register = () => {
           />
         </div>
 
-        <Button className="w-full mb-4" onClick={handleRegister}>
-          Create account
-        </Button>
+        <Button className="w-full mb-4" onClick={handleRegister}></Button>
 
         <p className="text-center text-sm text-(--color-secondary-text)">
           Already have an account?{" "}

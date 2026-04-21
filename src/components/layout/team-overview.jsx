@@ -1,4 +1,5 @@
 import TeamMemberItem from "./team-member-item";
+// import { useSelector } from "react-redux";
 
 const members = [
   { name: "kalum Perera", initials: "JC", assigned: 4, open: 4 },
@@ -7,15 +8,18 @@ const members = [
 ];
 
 const TeamOverview = () => {
+  // const { users } = useSelector((state) => state.users);
+  // console.log(users);
+
   return (
     <div className="bg-(--color-surface) border border-(--color-secondary-text)/10 rounded-2xl overflow-hidden shadow-xs">
       {members.map((member, index) => (
         <TeamMemberItem
           key={index}
-          name={member.name}
+          name={`${member.firstName} ${member.lastName}`}
           initials={member.initials}
-          assigned={member.assigned}
-          open={member.open}
+          assigned={member.totalIssues}
+          open={member.openIssues}
         />
       ))}
     </div>
