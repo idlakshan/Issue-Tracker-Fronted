@@ -9,9 +9,12 @@ import {
 import Button from "../components/ui/button";
 import { X } from "lucide-react";
 import { useGetAllUsersQuery } from "../redux/api/auth-api";
+import { useCreateIssueMutation } from "../redux/api/issue-api";
+import { toast } from "react-toastify";
 
 const IssueModel = ({ open, onClose }) => {
   const { data: users } = useGetAllUsersQuery();
+  const [createIssue] = useCreateIssueMutation();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -34,6 +37,36 @@ const IssueModel = ({ open, onClose }) => {
     label: `${user.firstName} ${user.lastName}`,
     value: user._id,
   }));
+
+  const handleSubmit = async () => {
+    try {
+      const res = await createIssue({
+        title,
+        description,
+        status,
+        priority,
+        severity,
+        assignee,
+      }).unwrap();
+
+      toast.success(res.message);
+      resetForm();
+      onClose();
+    } catch (err) {
+      console.error("Login Error:", err);
+      toast.error(err?.data?.message);
+    }
+  };
+
+//reset form
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setStatus("Open");
+    setPriority("Medium");
+    setSeverity("Moderate");
+    setAssignee("");
+  };
 
   if (!open) return null;
 
@@ -132,7 +165,9 @@ const IssueModel = ({ open, onClose }) => {
           <Button variant="secondary" onClick={onClose}>
             Cancel
           </Button>
-          <Button>Save issue</Button>
+          <Button onClick={handleSubmit}>
+            Save issue
+          </Button>
         </div>
       </div>
     </div>
