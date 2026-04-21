@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Trash, MessageSquare, SquarePen } from "lucide-react";
 import StatusBadge from "./status-badge";
 import PriorityBadge from "./priority-badge";
@@ -6,7 +5,6 @@ import { Avatar } from "./avatar";
 import {
   flexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 
@@ -14,14 +12,14 @@ const allColumns = [
   {
     id: "issue",
     header: "Issue",
-    accessorKey: "issue",
+    accessorKey: "title",
     cell: ({ row }) => (
       <div>
         <p className="text-xs text-(--color-secondary-text) py-1">
-          {row.original.id}
+          {row.original._id}
         </p>
         <p className="text-sm font-medium text-(--color-text)">
-          {row.original.issue}
+          {row.original.title}
         </p>
       </div>
     ),
@@ -55,7 +53,7 @@ const allColumns = [
   {
     id: "activity",
     header: "Activity",
-    accessorKey: "activity",
+    accessorKey: "activityCount",
     cell: ({ getValue }) => (
       <div className="flex items-center gap-1 text-(--color-secondary-text)">
         <MessageSquare size={14} />
@@ -66,10 +64,10 @@ const allColumns = [
   {
     id: "created",
     header: "Created",
-    accessorKey: "created",
+    accessorKey: "createdAt",
     cell: ({ getValue }) => (
       <span className="text-(--color-secondary-text) text-sm">
-        {getValue()}
+        {new Date(getValue()).toLocaleDateString()}
       </span>
     ),
   },
@@ -89,11 +87,18 @@ const allColumns = [
   },
 ];
 
-const Table = ({ data, hideColumns = [], hideFooter = false }) => {
-  const [pagination, setPagination] = useState({
+const Table = ({
+  data,
+  pagination,
+  setPageIndex,
+  hideColumns = [],
+  hideFooter = false,
+}) => {
+  const safePagination = pagination || {
     pageIndex: 0,
-    pageSize: 5,
-  });
+    pageSize: 8,
+    total: 1,
+  };
 
   const visibleColumns = allColumns.filter(
     (col) => !hideColumns.includes(col.id),
@@ -102,10 +107,19 @@ const Table = ({ data, hideColumns = [], hideFooter = false }) => {
   const table = useReactTable({
     data,
     columns: visibleColumns,
-    state: { pagination },
-    onPaginationChange: setPagination,
+
+    state: {
+      pagination: {
+        pageIndex: safePagination.pageIndex,
+        pageSize: safePagination.pageSize,
+      },
+    },
+
+    manualPagination: true,
+
+    pageCount: safePagination.total,
+
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
   });
 
   return (
@@ -147,20 +161,20 @@ const Table = ({ data, hideColumns = [], hideFooter = false }) => {
 
           <div className="flex gap-2 items-center">
             <button
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
+              onClick={() => setPageIndex(pagination.pageIndex - 1)}
+              disabled={pagination.pageIndex === 0}
               className="px-3 py-1 border rounded-md text-(--color-secondary-text) disabled:opacity-40"
             >
               Prev
             </button>
 
             <span className="px-3 py-1 rounded-md bg-(--color-primary) text-white">
-              {table.getState().pagination.pageIndex + 1}
+              {pagination.pageIndex + 1}
             </span>
 
             <button
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
+              onClick={() => setPageIndex(pagination.pageIndex + 1)}
+              disabled={pagination.pageIndex + 1 >= pagination.total}
               className="px-3 py-1 border rounded-md text-(--color-secondary-text) disabled:opacity-40"
             >
               Next

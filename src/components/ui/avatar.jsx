@@ -1,6 +1,9 @@
 import React from "react";
 
 export const Avatar = ({ assignee }) => {
+
+  //console.log(assignee);
+  
   return (
     <div className="flex items-center gap-2">
       <div className="w-7 h-7 rounded-full bg-(--color-avatar-bg) text-(--color-avatar-text) flex items-center justify-center text-[10px] font-medium">
@@ -8,7 +11,7 @@ export const Avatar = ({ assignee }) => {
       </div>
 
       <span className="text-sm text-(--color-text)">
-        {assignee?.name}
+        {`${assignee.firstName} ${assignee.lastName}`}
       </span>
     </div>
   );

@@ -3,11 +3,17 @@ import CountCard from "../components/ui/count-card";
 import Table from "../components/ui/table";
 import Button from "../components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { data } from "../util/table-data";
 import TeamOverview from "../components/layout/team-overview";
+import { useGetIssuesQuery } from "../redux/api/issue-api";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+
+  const { data } = useGetIssuesQuery({
+    page: 1,
+    limit: 5,
+  });
+const issues = data?.data?.issues || [];
 
   return (
     <div>
@@ -59,14 +65,14 @@ const Dashboard = () => {
             <Button
               variant="secondary"
               className="px-2! py-1!"
-              onClick={() => navigate("/issues")}
+              onClick={() => navigate("/admin/issues")}
             >
               View All
             </Button>
           </div>
 
           <Table
-            data={data}
+             data={issues}
             hideColumns={["created", "actions"]}
             hideFooter={true}
           />

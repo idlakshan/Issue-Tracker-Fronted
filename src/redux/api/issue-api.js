@@ -3,8 +3,10 @@ import { authApi } from "./auth-api";
 export const issueApi = authApi.injectEndpoints({
   endpoints: (builder) => ({
     getIssues: builder.query({
-      query: () => "/issues",
-      providesTags: ["Issues"],
+      query: (params) => ({
+        url: "/issues/get-issues",
+        params,
+      }),
     }),
     createIssue: builder.mutation({
       query: (newIssue) => ({
@@ -16,6 +18,5 @@ export const issueApi = authApi.injectEndpoints({
     }),
   }),
 });
-
 
 export const { useGetIssuesQuery, useCreateIssueMutation } = issueApi;

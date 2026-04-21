@@ -4,8 +4,8 @@ import { ISSUE_STATUS, ISSUE_PRIORITY } from "../constants/app-constants";
 import Table from "../components/ui/table";
 import Input from "../components/ui/input";
 import { Search } from "lucide-react";
-import { data } from "../util/table-data";
 import { useGetAllUsersQuery } from "../redux/api/auth-api";
+import { useGetIssuesQuery } from "../redux/api/issue-api";
 
 const AllIssues = () => {
   const { data: users } = useGetAllUsersQuery();
@@ -14,14 +14,36 @@ const AllIssues = () => {
   const [priority, setPriority] = useState("ALL");
   const [assignee, setAssignee] = useState("ALL");
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
-   const filteredUsers = users?.data?.filter((user) => user.role !== "ADMIN") || [];
+  const filteredUsers =
+    users?.data?.filter((user) => user.role !== "ADMIN") || [];
 
-  const assigneeOptions = filteredUsers.map((user) => ({
-    label: `${user.firstName} ${user.lastName}`,
-    value: user._id,
-  }));
+  const assigneeOptions = [
+    {
+      label: "All Assignees",
+      value: "ALL",
+    },
+    ...filteredUsers.map((user) => ({
+      label: `${user.firstName} ${user.lastName}`,
+      value: user._id,
+    })),
+  ];
 
+  const { data } = useGetIssuesQuery({
+    page,
+    limit: 5,
+    ...(status !== "ALL" && { status }),
+    ...(priority !== "ALL" && { priority }),
+    ...(assignee !== "ALL" && { assignee }),
+    ...(search.trim() && { search }),
+  });
+
+  //console.log(data);
+
+  const issues = data?.data?.issues || [];
+  const totalPages = data?.data?.totalPages || 0;
+  //console.log(totalPages);
   return (
     <div>
       <div className="flex flex-wrap gap-3 mb-6 px-1">
@@ -55,7 +77,16 @@ const AllIssues = () => {
         />
       </div>
 
-      <Table data={data} />
+      <Table
+        data={issues}
+        pagination={{
+          pageIndex: page - 1,
+          setPageIndex: (i) => setPage(i + 1),
+          pageSize: 8,
+          total: totalPages,
+        }}
+        setPageIndex={(i) => setPage(i + 1)}
+      />
     </div>
   );
 };
