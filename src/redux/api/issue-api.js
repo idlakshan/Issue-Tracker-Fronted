@@ -7,7 +7,7 @@ export const issueApi = authApi.injectEndpoints({
         url: "/issues/get-issues",
         params,
       }),
-      providesTags: ["Issues"]
+      providesTags: ["Issues"],
     }),
     createIssue: builder.mutation({
       query: (newIssue) => ({
@@ -15,15 +15,28 @@ export const issueApi = authApi.injectEndpoints({
         method: "POST",
         body: newIssue,
       }),
-      invalidatesTags: ["Issues", "Users","IssueCount"],
+      invalidatesTags: ["Issues", "Users", "IssueCount"],
     }),
-    getIssueCount:builder.query({
-      query:()=>({
-        url:"/issues/get-issues-count",
+    getIssueCount: builder.query({
+      query: () => ({
+        url: "/issues/get-issues-count",
       }),
-      providesTags: ["IssueCount"]
-    })
+      providesTags: ["IssueCount"],
+    }),
+    updateIssue: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/issues/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Issues", "IssueCount"],
+    }),
   }),
 });
 
-export const { useGetIssuesQuery, useCreateIssueMutation, useGetIssueCountQuery } = issueApi;
+export const {
+  useGetIssuesQuery,
+  useCreateIssueMutation,
+  useGetIssueCountQuery,
+  useUpdateIssueMutation
+} = issueApi;

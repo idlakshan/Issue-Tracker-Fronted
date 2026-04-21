@@ -74,9 +74,11 @@ const allColumns = [
   {
     id: "actions",
     header: "Actions",
-    cell: () => (
+    cell: ({ row, table }) => (
       <div className="flex gap-2 justify-end">
-        <button className="p-2 rounded-md ring-[0.5px] ring-(--color-secondary-text) hover:bg-gray-100 cursor-pointer">
+        <button className="p-2 rounded-md ring-[0.5px] ring-(--color-secondary-text) hover:bg-gray-100 cursor-pointer" onClick={() =>
+          table.options.meta?.onEdit(row.original)
+        }>
           <SquarePen size={15} className="text-(--color-secondary-text)" />
         </button>
         <button className="p-2 rounded-md ring-[0.5px] ring-(--color-secondary-text) text-red-500 hover:bg-gray-100 cursor-pointer">
@@ -93,6 +95,7 @@ const Table = ({
   setPageIndex,
   hideColumns = [],
   hideFooter = false,
+  onEdit 
 }) => {
   const safePagination = pagination || {
     pageIndex: 0,
@@ -107,7 +110,9 @@ const Table = ({
   const table = useReactTable({
     data,
     columns: visibleColumns,
-
+    meta: {
+    onEdit,
+  },
     state: {
       pagination: {
         pageIndex: safePagination.pageIndex,

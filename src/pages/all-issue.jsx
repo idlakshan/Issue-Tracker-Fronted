@@ -6,6 +6,7 @@ import Input from "../components/ui/input";
 import { Search } from "lucide-react";
 import { useGetAllUsersQuery } from "../redux/api/auth-api";
 import { useGetIssuesQuery } from "../redux/api/issue-api";
+import IssueModel from "./issue-model";
 
 const AllIssues = () => {
   const { data: users } = useGetAllUsersQuery();
@@ -15,6 +16,8 @@ const AllIssues = () => {
   const [assignee, setAssignee] = useState("ALL");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [open, setOpen] = useState(false);
+  const [selectedIssue, setSelectedIssue] = useState(null);
 
   const filteredUsers =
     users?.data?.filter((user) => user.role !== "ADMIN") || [];
@@ -44,6 +47,12 @@ const AllIssues = () => {
   const issues = data?.data?.issues || [];
   const totalPages = data?.data?.totalPages || 0;
   //console.log(totalPages);
+
+  const handleEdit = (issue) => {
+    setSelectedIssue(issue);
+    setOpen(true);
+  };
+
   return (
     <div>
       <div className="flex flex-wrap gap-3 mb-6 px-1">
@@ -79,6 +88,7 @@ const AllIssues = () => {
 
       <Table
         data={issues}
+        onEdit={handleEdit}
         pagination={{
           pageIndex: page - 1,
           setPageIndex: (i) => setPage(i + 1),
@@ -86,6 +96,15 @@ const AllIssues = () => {
           total: totalPages,
         }}
         setPageIndex={(i) => setPage(i + 1)}
+      />
+
+      <IssueModel
+        open={open}
+        onClose={() => {
+          setOpen(false);
+          setSelectedIssue(null);
+        }}
+        issue={selectedIssue}
       />
     </div>
   );

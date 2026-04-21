@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Input from "../components/ui/input";
 import { Dropdown } from "../components/ui/dropdown";
 import {
@@ -9,12 +9,16 @@ import {
 import Button from "../components/ui/button";
 import { X } from "lucide-react";
 import { useGetAllUsersQuery } from "../redux/api/auth-api";
-import { useCreateIssueMutation } from "../redux/api/issue-api";
+import {
+  useCreateIssueMutation,
+  useUpdateIssueMutation,
+} from "../redux/api/issue-api";
 import { toast } from "react-toastify";
 
-const IssueModel = ({ open, onClose }) => {
+const IssueModel = ({ open, onClose, issue }) => {
   const { data: users } = useGetAllUsersQuery();
   const [createIssue] = useCreateIssueMutation();
+  const [updateIssue] = useUpdateIssueMutation();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -31,7 +35,8 @@ const IssueModel = ({ open, onClose }) => {
 
   //console.log(users);
 
-  const filteredUsers = users?.data?.filter((user) => user.role !== "ADMIN") || [];
+  const filteredUsers =
+    users?.data?.filter((user) => user.role !== "ADMIN") || [];
 
   const assigneeOptions = filteredUsers.map((user) => ({
     label: `${user.firstName} ${user.lastName}`,
@@ -40,25 +45,38 @@ const IssueModel = ({ open, onClose }) => {
 
   const handleSubmit = async () => {
     try {
-      const res = await createIssue({
-        title,
-        description,
-        status,
-        priority,
-        severity,
-        assignee,
-      }).unwrap();
+      let res;
+
+      if (issue) {
+        res = await updateIssue({
+          id: issue._id,
+          title,
+          description,
+          status,
+          priority,
+          severity,
+          assignee,
+        }).unwrap();
+      } else {
+        res = await createIssue({
+          title,
+          description,
+          status,
+          priority,
+          severity,
+          assignee,
+        }).unwrap();
+      }
 
       toast.success(res.message);
       resetForm();
       onClose();
     } catch (err) {
-      console.error("Login Error:", err);
       toast.error(err?.data?.message);
     }
   };
 
-//reset form
+  //reset form
   const resetForm = () => {
     setTitle("");
     setDescription("");
@@ -68,6 +86,21 @@ const IssueModel = ({ open, onClose }) => {
     setAssignee("");
   };
 
+  useEffect(() => {
+    if (open) {
+      if (issue) {
+        setTitle(issue.title || "");
+        setDescription(issue.description || "");
+        setStatus(issue.status || "Open");
+        setPriority(issue.priority || "Medium");
+        setSeverity(issue.severity || "Moderate");
+        setAssignee(issue.assignee?._id || "");
+      } else {
+        resetForm();
+      }
+    }
+  }, [issue, open]);
+
   if (!open) return null;
 
   return (
@@ -76,7 +109,9 @@ const IssueModel = ({ open, onClose }) => {
 
       <div className="relative bg-(--color-surface) w-full max-w-xl rounded-2xl shadow-lg z-10">
         <div className="flex justify-between items-center px-6 py-4 border-b border-(--color-secondary-text)/50">
-          <h2 className="font-semibold text-lg">New Issue</h2>
+          <h2 className="font-semibold text-lg">
+            {issue ? "Edit Issue" : "New Issue"}
+          </h2>
           <X
             onClick={onClose}
             className="text-(--color-secondary-text) cursor-pointer"
@@ -165,9 +200,7 @@ const IssueModel = ({ open, onClose }) => {
           <Button variant="secondary" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit}>
-            Save issue
-          </Button>
+          <Button onClick={handleSubmit}>Save issue</Button>
         </div>
       </div>
     </div>
