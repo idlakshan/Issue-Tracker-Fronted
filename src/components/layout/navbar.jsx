@@ -3,10 +3,23 @@ import Button from "../ui/button";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import IssueModel from "../../pages/issue-model";
+import { useGetIssuesQuery } from "../../redux/api/issue-api";
+import { exportIssuesToExcel } from "../../util/export-issues-excel";
 
 const Navbar = () => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
+
+   const { data } = useGetIssuesQuery({
+    page: 1,
+    limit: 100000, 
+  });
+
+  const issues = data?.data?.issues || [];
+
+  const handleDownload = () => {
+    exportIssuesToExcel(issues);
+  };
 
   const getTitle = () => {
     const path = location.pathname;
@@ -23,7 +36,7 @@ const Navbar = () => {
       </h1>
 
       <div className="flex items-center gap-3">
-        <Button variant="secondary" icon={<Download size={16} />} />
+        <Button variant="secondary" icon={<Download size={16} />} onClick={handleDownload} />
 
         <div>
           <Button
