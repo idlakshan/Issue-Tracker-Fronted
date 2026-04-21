@@ -38,6 +38,14 @@ export const issueApi = authApi.injectEndpoints({
       }),
       invalidatesTags: ["Issues", "IssueCount"],
     }),
+    updateIssueStatus: builder.mutation({
+      query: ({ id, status }) => ({
+        url: `/issues/${id}/status`,
+        method: "PATCH",
+        body: { status },
+      }),
+      invalidatesTags: ["Issues", "IssueCount"],
+    }),
   }),
 });
 
@@ -46,5 +54,6 @@ export const {
   useCreateIssueMutation,
   useGetIssueCountQuery,
   useUpdateIssueMutation,
-  useDeleteIssueMutation
+  useDeleteIssueMutation,
+  useUpdateIssueStatusMutation 
 } = issueApi;

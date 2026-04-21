@@ -4,10 +4,16 @@ import { Avatar } from "../components/ui/avatar";
 import Button from "../components/ui/button";
 import PriorityBadge from "../components/ui/priority-badge";
 import StatusBadge from "../components/ui/status-badge";
+import { toast } from "react-toastify";
+import {
+  useDeleteIssueMutation,
+  useUpdateIssueStatusMutation,
+} from "../redux/api/issue-api";
 
-const IssueDetailsModal = ({ isOpen, onClose,issue }) => {
-
-  console.log(issue)
+const IssueDetailsModal = ({ isOpen, onClose, issue }) => {
+  //console.log(issue)
+  const [updateStatus] = useUpdateIssueStatusMutation();
+  const [deleteIssue] = useDeleteIssueMutation();
   const [comments, setComments] = useState([
     {
       id: 1,
@@ -21,6 +27,7 @@ const IssueDetailsModal = ({ isOpen, onClose,issue }) => {
   const [newComment, setNewComment] = useState("");
   const endRef = useRef(null);
 
+  //comment post function
   const handlePost = () => {
     if (!newComment.trim()) return;
 
@@ -38,6 +45,40 @@ const IssueDetailsModal = ({ isOpen, onClose,issue }) => {
     setTimeout(() => {
       endRef.current?.scrollIntoView({ behavior: "smooth" });
     }, 100);
+  };
+
+  //update issue status function
+  const handleStatusChange = async (status) => {
+    const confirmUpdate = window.confirm(
+      `Are you sure you want to change status to "${status}"?`,
+    );
+
+    if (!confirmUpdate) return;
+
+    try {
+      await updateStatus({ id: issue._id, status }).unwrap();
+      toast.success("Status updated");
+      onClose();
+    } catch (err) {
+      toast.error(err?.data?.message || "Update failed");
+    }
+  };
+
+  //delete issue function
+  const handleDelete = async () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this issue?",
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      await deleteIssue(issue._id).unwrap();
+      toast.success("Issue deleted successfully");
+      onClose();
+    } catch (err) {
+      toast.error(err?.data?.message || "Delete failed");
+    }
   };
 
   if (!isOpen) return null;
@@ -63,7 +104,7 @@ const IssueDetailsModal = ({ isOpen, onClose,issue }) => {
           <div className="col-span-2 p-6 py-2 space-y-5 overflow-y-auto">
             <div>
               <h1 className="text-lg font-semibold text-(--color-text)">
-                 {issue?.title}
+                {issue?.title}
               </h1>
             </div>
 
@@ -110,7 +151,7 @@ const IssueDetailsModal = ({ isOpen, onClose,issue }) => {
               <div ref={endRef} />
 
               <div className="flex gap-3 items-end">
-                <Avatar assignee={{ initials:"DL" }} />
+                <Avatar assignee={{ initials: "DL" }} />
 
                 <div className="flex-1 flex gap-2">
                   <textarea
@@ -158,7 +199,9 @@ const IssueDetailsModal = ({ isOpen, onClose,issue }) => {
               <p className="text-xs text-(--color-secondary-text) mb-1">
                 SEVERITY
               </p>
-              <span className="text-sm text-(--color-text)">{issue?.severity}</span>
+              <span className="text-sm text-(--color-text)">
+                {issue?.severity}
+              </span>
             </div>
 
             <div>
@@ -181,23 +224,43 @@ const IssueDetailsModal = ({ isOpen, onClose,issue }) => {
               </p>
 
               <div className="space-y-2">
-                <Button variant="secondary" className="w-full hover:bg-(--color-primary)/10! !hover:text-(--color-primary)">
+                <Button
+                  variant="secondary"
+                  className="w-full hover:bg-(--color-primary)/10! !hover:text-(--color-primary)"
+                  onClick={() => handleStatusChange("Open")}
+                >
                   Open
                 </Button>
-                <Button variant="secondary" className="w-full hover:bg-(--color-primary)/10! !hover:text-(--color-primary)">
+                <Button
+                  variant="secondary"
+                  className="w-full hover:bg-(--color-primary)/10! !hover:text-(--color-primary)"
+                  onClick={() => handleStatusChange("In Progress")}
+                >
                   In Progress
                 </Button>
-                <Button variant="secondary" className="w-full hover:bg-(--color-primary)/10! !hover:text-(--color-primary)">
+                <Button
+                  variant="secondary"
+                  className="w-full hover:bg-(--color-primary)/10! !hover:text-(--color-primary)"
+                  onClick={() => handleStatusChange("Resolved")}
+                >
                   Resolved
                 </Button>
-                <Button variant="secondary" className="w-full hover:bg-(--color-primary)/10! !hover:text-(--color-primary)">
+                <Button
+                  variant="secondary"
+                  className="w-full hover:bg-(--color-primary)/10! !hover:text-(--color-primary)"
+                  onClick={() => handleStatusChange("Closed")}
+                >
                   Closed
                 </Button>
               </div>
             </div>
 
             <div className="pt-4 border-t border-(--color-secondary-text)/10">
-              <Button className="w-full bg-red-100 border border-red-500 hover:bg-red-600 text-red-600 hover:text-(--color-surface)">
+              <Button
+                className="w-full bg-red-100 border border-red-500 hover:bg-red-600
+               text-red-600 hover:text-(--color-surface)"
+                onClick={handleDelete}
+              >
                 Delete Issue
               </Button>
             </div>
