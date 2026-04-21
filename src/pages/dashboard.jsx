@@ -4,17 +4,23 @@ import Table from "../components/ui/table";
 import Button from "../components/ui/button";
 import { useNavigate } from "react-router-dom";
 import TeamOverview from "../components/layout/team-overview";
-import { useGetIssueCountQuery, useGetIssuesQuery } from "../redux/api/issue-api";
+import {
+  useGetIssueCountQuery,
+  useGetIssuesQuery,
+} from "../redux/api/issue-api";
+import { useState } from "react";
+import IssueDetailsModal from "../pages/issue-details-modal";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const {data:counts} = useGetIssueCountQuery();
- // console.log(counts)
+  const [selectedIssue, setSelectedIssue] = useState(null);
+  const { data: counts } = useGetIssueCountQuery();
+  // console.log(counts)
   const { data } = useGetIssuesQuery({
     page: 1,
     limit: 5,
   });
-const issues = data?.data?.issues || [];
+  const issues = data?.data?.issues || [];
 
   return (
     <div>
@@ -73,9 +79,10 @@ const issues = data?.data?.issues || [];
           </div>
 
           <Table
-             data={issues}
+            data={issues}
             hideColumns={["created", "actions"]}
             hideFooter={true}
+            onRowClick={(issue) => setSelectedIssue(issue)}
           />
         </div>
         <div className="col-span-2 space-y-3 mt-6 ">
@@ -85,6 +92,12 @@ const issues = data?.data?.issues || [];
           <TeamOverview />
         </div>
       </div>
+
+      <IssueDetailsModal
+        isOpen={selectedIssue ? true : false}
+        onClose={() => setSelectedIssue(null)}
+        issue={selectedIssue}
+      />
     </div>
   );
 };

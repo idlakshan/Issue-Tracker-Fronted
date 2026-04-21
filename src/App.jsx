@@ -27,6 +27,7 @@ function App() {
         <Route element={<AppLayout />}>
           <Route path="/admin" element={<Dashboard />} />
           <Route path="/admin/issues" element={<AllIssues />} />
+           <Route path="/admin/assignees" element={<div>Assignees</div>} />
         </Route>
       </Route>
 

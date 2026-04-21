@@ -5,7 +5,9 @@ import Button from "../components/ui/button";
 import PriorityBadge from "../components/ui/priority-badge";
 import StatusBadge from "../components/ui/status-badge";
 
-const IssueDetailsModal = ({ isOpen, onClose }) => {
+const IssueDetailsModal = ({ isOpen, onClose,issue }) => {
+
+  console.log(issue)
   const [comments, setComments] = useState([
     {
       id: 1,
@@ -41,19 +43,16 @@ const IssueDetailsModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
       <div className="w-225 h-[80vh] bg-(--color-surface) rounded-2xl shadow-xl overflow-hidden flex flex-col">
         <div className="flex items-center justify-between px-6 py-4 border-b border-(--color-secondary-text)/10">
           <h2 className="text-sm font-semibold text-(--color-secondary-text)">
-            id
+            {issue?._id}
           </h2>
 
           <div className="flex items-center gap-3">
-            <Button variant="secondary" className="text-sm mr-4">
-              Edit
-            </Button>
             <X
-              size={18}
+              size={20}
               onClick={onClose}
               className="cursor-pointer text-(--color-secondary-text)"
             />
@@ -64,7 +63,7 @@ const IssueDetailsModal = ({ isOpen, onClose }) => {
           <div className="col-span-2 p-6 py-2 space-y-5 overflow-y-auto">
             <div>
               <h1 className="text-lg font-semibold text-(--color-text)">
-                issue
+                 {issue?.title}
               </h1>
             </div>
 
@@ -74,9 +73,7 @@ const IssueDetailsModal = ({ isOpen, onClose }) => {
               </p>
 
               <div className="bg-gray-50 border rounded-lg p-3 text-sm text-(--color-secondary-text)">
-                hello how are u hsadad jlsajdlajd adadad asada dada hello how
-                are u hsadad jlsajdlajd adadad asada dada hello how are u hsadad
-                jlsajdlajd adadad asada dada
+                {issue?.description}
               </div>
             </div>
 
@@ -84,7 +81,7 @@ const IssueDetailsModal = ({ isOpen, onClose }) => {
               <p className="text-xs font-semibold text-(--color-secondary-text) mb-3">
                 ACTIVITY{" "}
                 <span className="text-xs bg-(--color-status-closed-text)/10 text-(--color-status-closed-text) px-2 py-0.5 rounded-full ml-2">
-                  {comments.length}
+                  {issue?.activityCount}
                 </span>
               </p>
 
@@ -113,7 +110,7 @@ const IssueDetailsModal = ({ isOpen, onClose }) => {
               <div ref={endRef} />
 
               <div className="flex gap-3 items-end">
-                <Avatar assignee={{ initials: "AM" }} />
+                <Avatar assignee={{ initials:"DL" }} />
 
                 <div className="flex-1 flex gap-2">
                   <textarea
@@ -146,30 +143,29 @@ const IssueDetailsModal = ({ isOpen, onClose }) => {
                 ASSIGNEE
               </p>
               <div className="flex items-center gap-2">
-                <Avatar assignee={{ initials: "TB" }} />
-                <span className="text-sm font-medium">Name Assignee</span>
+                <Avatar assignee={issue?.assignee} />
               </div>
             </div>
 
             <div>
-              <p className="text-xs text-(--color-secondary-text) mb-1">
+              <p className="text-xs text-(--color-secondary-text) mb-2">
                 PRIORITY
               </p>
-              <PriorityBadge priority="High" />
+              <PriorityBadge priority={issue?.priority} />
             </div>
 
             <div>
               <p className="text-xs text-(--color-secondary-text) mb-1">
                 SEVERITY
               </p>
-              <span className="text-sm text-(--color-text)">Moderate</span>
+              <span className="text-sm text-(--color-text)">{issue?.severity}</span>
             </div>
 
             <div>
-              <p className="text-xs text-(--color-secondary-text) mb-1">
+              <p className="text-xs text-(--color-secondary-text) mb-2">
                 STATUS
               </p>
-              <StatusBadge status="Resolved" />
+              <StatusBadge status={issue?.status} />
             </div>
 
             <div>
@@ -185,16 +181,16 @@ const IssueDetailsModal = ({ isOpen, onClose }) => {
               </p>
 
               <div className="space-y-2">
-                <Button variant="secondary" className="w-full">
+                <Button variant="secondary" className="w-full hover:bg-(--color-primary)/10! !hover:text-(--color-primary)">
                   Open
                 </Button>
-                <Button variant="secondary" className="w-full">
+                <Button variant="secondary" className="w-full hover:bg-(--color-primary)/10! !hover:text-(--color-primary)">
                   In Progress
                 </Button>
-                <Button variant="secondary" className="w-full">
+                <Button variant="secondary" className="w-full hover:bg-(--color-primary)/10! !hover:text-(--color-primary)">
                   Resolved
                 </Button>
-                <Button variant="secondary" className="w-full">
+                <Button variant="secondary" className="w-full hover:bg-(--color-primary)/10! !hover:text-(--color-primary)">
                   Closed
                 </Button>
               </div>

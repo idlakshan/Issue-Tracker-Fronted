@@ -78,13 +78,19 @@ const allColumns = [
       <div className="flex gap-2 justify-end">
         <button
           className="p-2 rounded-md ring-[0.5px] ring-(--color-secondary-text) hover:bg-gray-100 cursor-pointer"
-          onClick={() => table.options.meta?.onEdit(row.original)}
+          onClick={(e) => {
+            e.stopPropagation();
+            table.options.meta?.onEdit(row.original);
+          }}
         >
           <SquarePen size={15} className="text-(--color-secondary-text)" />
         </button>
         <button
           className="p-2 rounded-md ring-[0.5px] ring-(--color-secondary-text) text-red-500 hover:bg-gray-100 cursor-pointer"
-          onClick={() => table.options.meta?.onDelete(row.original._id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            table.options.meta?.onDelete(row.original._id);
+          }}
         >
           <Trash size={15} />
         </button>
@@ -101,6 +107,7 @@ const Table = ({
   hideFooter = false,
   onEdit,
   onDelete,
+  onRowClick
 }) => {
   const safePagination = pagination || {
     pageIndex: 0,
@@ -118,6 +125,7 @@ const Table = ({
     meta: {
       onEdit,
       onDelete,
+      onRowClick,
     },
     state: {
       pagination: {
@@ -150,6 +158,7 @@ const Table = ({
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
+              onClick={() => table.options.meta?.onRowClick?.(row.original)}
               className="border-b border-(--color-table-header) hover:bg-gray-50 transition"
             >
               {row.getVisibleCells().map((cell) => (

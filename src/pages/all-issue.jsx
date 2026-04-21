@@ -5,9 +5,13 @@ import Table from "../components/ui/table";
 import Input from "../components/ui/input";
 import { Search } from "lucide-react";
 import { useGetAllUsersQuery } from "../redux/api/auth-api";
-import { useDeleteIssueMutation, useGetIssuesQuery } from "../redux/api/issue-api";
+import {
+  useDeleteIssueMutation,
+  useGetIssuesQuery,
+} from "../redux/api/issue-api";
 import IssueModel from "./issue-model";
 import { toast } from "react-toastify";
+import IssueDetailsModal from "./issue-details-modal";
 
 const AllIssues = () => {
   const { data: users } = useGetAllUsersQuery();
@@ -19,6 +23,7 @@ const AllIssues = () => {
   const [page, setPage] = useState(1);
   const [open, setOpen] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   const [deleteIssue] = useDeleteIssueMutation();
   const filteredUsers =
@@ -56,19 +61,24 @@ const AllIssues = () => {
   };
 
   const handleDelete = async (id) => {
-  const confirmDelete = window.confirm(
-    "Are you sure you want to delete this issue?"
-  );
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this issue?",
+    );
 
-  if (!confirmDelete) return;
+    if (!confirmDelete) return;
 
-  try {
-    const res = await deleteIssue(id).unwrap();
-    toast.success(res.message);
-  } catch (err) {
-    toast.error(err?.data?.message || "Delete failed");
-  }
-};
+    try {
+      const res = await deleteIssue(id).unwrap();
+      toast.success(res.message);
+    } catch (err) {
+      toast.error(err?.data?.message || "Delete failed");
+    }
+  };
+
+  const handleRowClick = (issue) => {
+    setSelectedIssue(issue);
+    setDetailsOpen(true);
+  };
 
   return (
     <div>
@@ -107,6 +117,7 @@ const AllIssues = () => {
         data={issues}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onRowClick={handleRowClick}
         pagination={{
           pageIndex: page - 1,
           setPageIndex: (i) => setPage(i + 1),
@@ -124,6 +135,15 @@ const AllIssues = () => {
         }}
         issue={selectedIssue}
         key={selectedIssue?._id || "new-issue"}
+      />
+
+      <IssueDetailsModal
+        isOpen={detailsOpen}
+        onClose={() => {
+          setDetailsOpen(false);
+          setSelectedIssue(null);
+        }}
+        issue={selectedIssue}
       />
     </div>
   );
