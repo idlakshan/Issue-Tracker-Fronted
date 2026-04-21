@@ -76,12 +76,16 @@ const allColumns = [
     header: "Actions",
     cell: ({ row, table }) => (
       <div className="flex gap-2 justify-end">
-        <button className="p-2 rounded-md ring-[0.5px] ring-(--color-secondary-text) hover:bg-gray-100 cursor-pointer" onClick={() =>
-          table.options.meta?.onEdit(row.original)
-        }>
+        <button
+          className="p-2 rounded-md ring-[0.5px] ring-(--color-secondary-text) hover:bg-gray-100 cursor-pointer"
+          onClick={() => table.options.meta?.onEdit(row.original)}
+        >
           <SquarePen size={15} className="text-(--color-secondary-text)" />
         </button>
-        <button className="p-2 rounded-md ring-[0.5px] ring-(--color-secondary-text) text-red-500 hover:bg-gray-100 cursor-pointer">
+        <button
+          className="p-2 rounded-md ring-[0.5px] ring-(--color-secondary-text) text-red-500 hover:bg-gray-100 cursor-pointer"
+          onClick={() => table.options.meta?.onDelete(row.original._id)}
+        >
           <Trash size={15} />
         </button>
       </div>
@@ -95,7 +99,8 @@ const Table = ({
   setPageIndex,
   hideColumns = [],
   hideFooter = false,
-  onEdit 
+  onEdit,
+  onDelete,
 }) => {
   const safePagination = pagination || {
     pageIndex: 0,
@@ -111,8 +116,9 @@ const Table = ({
     data,
     columns: visibleColumns,
     meta: {
-    onEdit,
-  },
+      onEdit,
+      onDelete,
+    },
     state: {
       pagination: {
         pageIndex: safePagination.pageIndex,
@@ -121,9 +127,7 @@ const Table = ({
     },
 
     manualPagination: true,
-
     pageCount: safePagination.total,
-
     getCoreRowModel: getCoreRowModel(),
   });
 

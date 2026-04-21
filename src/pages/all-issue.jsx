@@ -5,8 +5,9 @@ import Table from "../components/ui/table";
 import Input from "../components/ui/input";
 import { Search } from "lucide-react";
 import { useGetAllUsersQuery } from "../redux/api/auth-api";
-import { useGetIssuesQuery } from "../redux/api/issue-api";
+import { useDeleteIssueMutation, useGetIssuesQuery } from "../redux/api/issue-api";
 import IssueModel from "./issue-model";
+import { toast } from "react-toastify";
 
 const AllIssues = () => {
   const { data: users } = useGetAllUsersQuery();
@@ -19,6 +20,7 @@ const AllIssues = () => {
   const [open, setOpen] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState(null);
 
+  const [deleteIssue] = useDeleteIssueMutation();
   const filteredUsers =
     users?.data?.filter((user) => user.role !== "ADMIN") || [];
 
@@ -35,7 +37,7 @@ const AllIssues = () => {
 
   const { data } = useGetIssuesQuery({
     page,
-    limit: 8,
+    limit: 7,
     ...(status !== "All" && { status }),
     ...(priority !== "All" && { priority }),
     ...(assignee !== "All" && { assignee }),
@@ -52,6 +54,21 @@ const AllIssues = () => {
     setSelectedIssue(issue);
     setOpen(true);
   };
+
+  const handleDelete = async (id) => {
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this issue?"
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+    const res = await deleteIssue(id).unwrap();
+    toast.success(res.message);
+  } catch (err) {
+    toast.error(err?.data?.message || "Delete failed");
+  }
+};
 
   return (
     <div>
@@ -89,6 +106,7 @@ const AllIssues = () => {
       <Table
         data={issues}
         onEdit={handleEdit}
+        onDelete={handleDelete}
         pagination={{
           pageIndex: page - 1,
           setPageIndex: (i) => setPage(i + 1),

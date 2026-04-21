@@ -12,7 +12,7 @@ const Dashboard = () => {
  // console.log(counts)
   const { data } = useGetIssuesQuery({
     page: 1,
-    limit: 6,
+    limit: 5,
   });
 const issues = data?.data?.issues || [];
 
