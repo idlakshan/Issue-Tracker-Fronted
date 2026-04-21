@@ -28,7 +28,7 @@ const IssueModel = ({ open, onClose }) => {
 
   //console.log(users);
 
-  const filteredUsers = users?.data?.filter((user) => user.role !== "ADMIN");
+  const filteredUsers = users?.data?.filter((user) => user.role !== "ADMIN") || [];
 
   const assigneeOptions = filteredUsers.map((user) => ({
     label: `${user.firstName} ${user.lastName}`,
