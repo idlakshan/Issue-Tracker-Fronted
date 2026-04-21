@@ -1,19 +1,24 @@
+import { useGetAllUsersQuery } from "../../redux/api/auth-api";
 import TeamMemberItem from "./team-member-item";
-// import { useSelector } from "react-redux";
-
-const members = [
-  { name: "kalum Perera", initials: "JC", assigned: 4, open: 4 },
-  { name: "Ashen perera", initials: "TB", assigned: 3, open: 1 },
-  { name: "Namal peries", initials: "SR", assigned: 1, open: 1 },
-];
 
 const TeamOverview = () => {
-  // const { users } = useSelector((state) => state.users);
-  // console.log(users);
+  const { data: users, isLoading } = useGetAllUsersQuery();
+
+  //console.log(users);
+  const filteredUsers =
+    users?.data?.filter((user) => user.role !== "ADMIN") || [];
+
+  if (isLoading) {
+    return (
+      <div className="bg-(--color-surface) border border-(--color-secondary-text)/10 rounded-2xl p-4">
+        Loading team members...
+      </div>
+    );
+  }
 
   return (
     <div className="bg-(--color-surface) border border-(--color-secondary-text)/10 rounded-2xl overflow-hidden shadow-xs">
-      {members.map((member, index) => (
+      {filteredUsers.map((member, index) => (
         <TeamMemberItem
           key={index}
           name={`${member.firstName} ${member.lastName}`}
