@@ -12,6 +12,7 @@ import {
 import IssueModel from "./issue-model";
 import { toast } from "react-toastify";
 import IssueDetailsModal from "./issue-details-modal";
+import Swal from "sweetalert2";
 
 const AllIssues = () => {
   const { data: users } = useGetAllUsersQuery();
@@ -61,11 +62,17 @@ const AllIssues = () => {
   };
 
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this issue?",
-    );
+    const result = await Swal.fire({
+         title: "Delete Issue",
+         text: "Are you sure you want to delete this issue?",
+         icon: "warning",
+         showCancelButton: true,
+         confirmButtonColor: "#2563eb",
+         cancelButtonColor: "#8e8e9e",
+         confirmButtonText: "Yes, delete it",
+       });
 
-    if (!confirmDelete) return;
+      if (!result.isConfirmed) return;
 
     try {
       const res = await deleteIssue(id).unwrap();

@@ -9,6 +9,7 @@ import {
   useDeleteIssueMutation,
   useUpdateIssueStatusMutation,
 } from "../redux/api/issue-api";
+import Swal from "sweetalert2";
 
 const IssueDetailsModal = ({ isOpen, onClose, issue }) => {
   //console.log(issue)
@@ -49,11 +50,17 @@ const IssueDetailsModal = ({ isOpen, onClose, issue }) => {
 
   //update issue status function
   const handleStatusChange = async (status) => {
-    const confirmUpdate = window.confirm(
-      `Are you sure you want to change status to "${status}"?`,
-    );
+    const result = await Swal.fire({
+      title: "Change Status",
+      text: `Change status to "${status}"?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#2563eb",
+      cancelButtonColor: "#8e8e9e",
+      confirmButtonText: "Confirm",
+    });
 
-    if (!confirmUpdate) return;
+    if (!result.isConfirmed) return;
 
     try {
       await updateStatus({ id: issue._id, status }).unwrap();
@@ -66,11 +73,17 @@ const IssueDetailsModal = ({ isOpen, onClose, issue }) => {
 
   //delete issue function
   const handleDelete = async () => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this issue?",
-    );
+    const result = await Swal.fire({
+      title: "Delete Issue",
+      text: "Are you sure you want to delete this issue?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#2563eb",
+      cancelButtonColor: "#8e8e9e",
+      confirmButtonText: "Yes, delete it",
+    });
 
-    if (!confirmDelete) return;
+    if (!result.isConfirmed) return;
 
     try {
       await deleteIssue(issue._id).unwrap();
