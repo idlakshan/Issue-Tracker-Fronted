@@ -19,6 +19,7 @@ export const authApi = createApi({
         method: "POST",
         body: userData,
       }),
+      invalidatesTags: ["Users"],
     }),
     getAllUsers: builder.query({
       query: () => "/users",
@@ -27,5 +28,5 @@ export const authApi = createApi({
   }),
 });
 
-
-export const { useLoginMutation, useRegisterMutation, useGetAllUsersQuery } = authApi;
+export const { useLoginMutation, useRegisterMutation, useGetAllUsersQuery } =
+  authApi;

@@ -5,19 +5,22 @@ import Table from "../components/ui/table";
 import Input from "../components/ui/input";
 import { Search } from "lucide-react";
 import { data } from "../util/table-data";
+import { useGetAllUsersQuery } from "../redux/api/auth-api";
 
 const AllIssues = () => {
+  const { data: users } = useGetAllUsersQuery();
+
   const [status, setStatus] = useState("ALL");
   const [priority, setPriority] = useState("ALL");
   const [assignee, setAssignee] = useState("ALL");
   const [search, setSearch] = useState("");
 
-  const assigneeOptions = [
-    { label: "All Assignees", value: "ALL" },
-    { label: "Sameera Silva", value: "Sameera" },
-    { label: "Ajith Perera", value: "Ajith" },
-    { label: "Samantha Silva", value: "Samantha" },
-  ];
+   const filteredUsers = users?.data?.filter((user) => user.role !== "ADMIN") || [];
+
+  const assigneeOptions = filteredUsers.map((user) => ({
+    label: `${user.firstName} ${user.lastName}`,
+    value: user._id,
+  }));
 
   return (
     <div>
