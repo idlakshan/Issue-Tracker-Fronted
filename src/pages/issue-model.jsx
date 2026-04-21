@@ -8,8 +8,11 @@ import {
 } from "../constants/app-constants";
 import Button from "../components/ui/button";
 import { X } from "lucide-react";
+import { useGetAllUsersQuery } from "../redux/api/auth-api";
 
 const IssueModel = ({ open, onClose }) => {
+  const { data: users } = useGetAllUsersQuery();
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("Open");
@@ -23,12 +26,14 @@ const IssueModel = ({ open, onClose }) => {
     (option) => option.value !== "All",
   );
 
-  const assigneeOptions = [
-    { label: "Unassigned", value: "" },
-    { label: "John Doe", value: "john_doe" },
-    { label: "Jane Smith", value: "jane_smith" },
-    { label: "Bob Johnson", value: "bob_johnson" },
-  ];
+  //console.log(users);
+
+  const filteredUsers = users?.data?.filter((user) => user.role !== "ADMIN");
+
+  const assigneeOptions = filteredUsers.map((user) => ({
+    label: `${user.firstName} ${user.lastName}`,
+    value: user._id,
+  }));
 
   if (!open) return null;
 
