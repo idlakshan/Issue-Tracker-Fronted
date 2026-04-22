@@ -43,7 +43,7 @@ const AllIssues = () => {
 
   const { data } = useGetIssuesQuery({
     page,
-    limit: 7,
+    limit: 6,
     ...(status !== "All" && { status }),
     ...(priority !== "All" && { priority }),
     ...(assignee !== "All" && { assignee }),
