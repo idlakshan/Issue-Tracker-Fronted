@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 
 function App() {
   const { user, accessToken } = useSelector((state) => state.auth);
-  console.log(user, accessToken);
+ // console.log(user, accessToken);
   
   const getDefaultRoute = () => {
     if (!accessToken || !user) return "/login";

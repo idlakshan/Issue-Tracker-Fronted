@@ -59,6 +59,13 @@ const IssueModel = ({ open, onClose, issue }) => {
     }
     setError("");
 
+    const finalAssignee = assignee || (assigneeOptions.length > 0 ? assigneeOptions[0].value : null);
+
+  if (!finalAssignee) {
+    toast.error("Please select an assignee");
+    return;
+  }
+
     try {
       let res;
 
@@ -70,7 +77,7 @@ const IssueModel = ({ open, onClose, issue }) => {
           status,
           priority,
           severity,
-          assignee,
+          assignee: finalAssignee,
         }).unwrap();
       } else {
         res = await createIssue({
@@ -79,7 +86,7 @@ const IssueModel = ({ open, onClose, issue }) => {
           status,
           priority,
           severity,
-          assignee,
+          assignee: finalAssignee,
         }).unwrap();
       }
 
