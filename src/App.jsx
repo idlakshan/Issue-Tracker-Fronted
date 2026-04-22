@@ -34,7 +34,7 @@ function App() {
 
       <Route element={<ProtectedRoute allowedRoles={["DEV"]} />}>
         <Route element={<AppLayout />}>
-          <Route path="/dev" element={<div>Developer Dashboard</div>} />
+          <Route path="/dev" element={<div>Developer Dashboard – Coming soon. Please use admin credentials for now.</div>} />
           <Route path="/dev/my-tasks" element={<div>My Tasks</div>} />
         </Route>
       </Route>

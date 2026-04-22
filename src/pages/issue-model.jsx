@@ -14,6 +14,7 @@ import {
   useUpdateIssueMutation,
 } from "../redux/api/issue-api";
 import { toast } from "react-toastify";
+import { z } from "zod";
 
 const IssueModel = ({ open, onClose, issue }) => {
   const { data: users } = useGetAllUsersQuery();
@@ -26,6 +27,7 @@ const IssueModel = ({ open, onClose, issue }) => {
   const [priority, setPriority] = useState(issue?.priority || "Medium");
   const [severity, setSeverity] = useState(issue?.severity || "Moderate");
   const [assignee, setAssignee] = useState(issue?.assignee?._id || "");
+  const [error, setError] = useState("");
 
   const statusOptions = ISSUE_STATUS.filter((option) => option.value !== "All");
 
@@ -43,7 +45,20 @@ const IssueModel = ({ open, onClose, issue }) => {
     value: user._id,
   }));
 
+  const issueSchema = z.object({
+    title: z.string().min(1, "* Title is required"),
+  });
+
+  //function for create and update issue
   const handleSubmit = async () => {
+    const result = issueSchema.safeParse({ title });
+
+    if (!result.success) {
+      setError(result.error.issues[0].message);
+      return;
+    }
+    setError("");
+
     try {
       let res;
 
@@ -86,7 +101,6 @@ const IssueModel = ({ open, onClose, issue }) => {
     setAssignee("");
   };
 
-
   if (!open) return null;
 
   return (
@@ -107,7 +121,8 @@ const IssueModel = ({ open, onClose, issue }) => {
         <div className="p-6 space-y-4">
           <div>
             <label className="text-sm font-medium text-(--color-secondary-text)">
-              Title <span className="text-red-500">*</span>
+              Title{" "}
+              <span className="text-(--color-priority-critical-text)">*</span>
             </label>
             <Input
               placeholder="Issue title"
@@ -115,6 +130,11 @@ const IssueModel = ({ open, onClose, issue }) => {
               onChange={(e) => setTitle(e.target.value)}
               className="mt-1 w-full "
             />
+            {error && (
+              <p className="text-(--color-priority-critical-text) text-xs mt-1">
+                {error}
+              </p>
+            )}
           </div>
 
           <div>

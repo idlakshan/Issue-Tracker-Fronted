@@ -5,18 +5,44 @@ import Button from "../components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useRegisterMutation } from "../redux/api/auth-api";
+import { z } from "zod";
 
 const Register = () => {
   const [register] = useRegisterMutation();
-
-  
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
+
+  const registerSchema = z.object({
+    firstName: z.string().min(2, "Enter at least 2 characters"),
+    lastName: z.string().min(2, "Enter at least 2 characters"),
+    email: z.string().email("Enter a valid email"),
+    password: z.string().min(8, "Minimum 8 characters"),
+  });
 
   const handleRegister = async () => {
+    const result = registerSchema.safeParse({
+      firstName,
+      lastName,
+      email,
+      password,
+    });
+
+    if (!result.success) {
+      const fieldErrors = {};
+      result.error.issues.forEach((err) => {
+        fieldErrors[err.path[0]] = err.message;
+      });
+
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setErrors({});
+
     try {
       await register({
         firstName,
@@ -29,7 +55,6 @@ const Register = () => {
       navigate("/login");
     } catch (err) {
       toast.error(err?.data?.message);
-      console.error("Register Error:", err);
     }
   };
 
@@ -63,6 +88,11 @@ const Register = () => {
               onChange={(e) => setFirstName(e.target.value)}
               className="w-full"
             />
+            {errors.firstName && (
+              <p className="text-(--color-priority-critical-text) text-xs mt-1">
+                {errors.firstName}
+              </p>
+            )}
           </div>
 
           <div className="mb-4">
@@ -75,6 +105,11 @@ const Register = () => {
               onChange={(e) => setLastName(e.target.value)}
               className="w-full"
             />
+            {errors.lastName && (
+              <p className="text-(--color-priority-critical-text) text-xs mt-1">
+                {errors.lastName}
+              </p>
+            )}
           </div>
         </div>
 
@@ -89,6 +124,11 @@ const Register = () => {
             onChange={(e) => setEmail(e.target.value)}
             className="w-full"
           />
+          {errors.email && (
+            <p className="text-(--color-priority-critical-text) text-xs mt-1">
+              {errors.email}
+            </p>
+          )}
         </div>
 
         <div className="mb-6">
@@ -102,9 +142,16 @@ const Register = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full"
           />
+          {errors.password && (
+            <p className="text-(--color-priority-critical-text) text-xs mt-1">
+              {errors.password}
+            </p>
+          )}
         </div>
 
-        <Button className="w-full mb-4" onClick={handleRegister}>Register</Button>
+        <Button className="w-full mb-4" onClick={handleRegister}>
+          Register
+        </Button>
 
         <p className="text-center text-sm text-(--color-secondary-text)">
           Already have an account?{" "}

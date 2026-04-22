@@ -158,7 +158,7 @@ const IssueDetailsModal = ({ isOpen, onClose, issue }) => {
                       </div>
 
                       <span className="text-xs text-(--color-secondary-text)">
-                        {new Date(c.createdAt).toLocaleString("en-GB")}
+                        {new Date(c.createdAt).toLocaleString()}
                       </span>
                     </div>
 
