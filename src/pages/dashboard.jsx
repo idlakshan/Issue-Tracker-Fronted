@@ -10,13 +10,14 @@ import {
 } from "../redux/api/issue-api";
 import { useState } from "react";
 import IssueDetailsModal from "../pages/issue-details-modal";
+import TableSkeleton from "../components/ui/table-skeleton";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [selectedIssue, setSelectedIssue] = useState(null);
   const { data: counts } = useGetIssueCountQuery();
   // console.log(counts)
-  const { data } = useGetIssuesQuery({
+  const { data, isFetching } = useGetIssuesQuery({
     page: 1,
     limit: 4,
   });
@@ -77,13 +78,18 @@ const Dashboard = () => {
               View All
             </Button>
           </div>
-
-          <Table
-            data={issues}
-            hideColumns={["created", "actions"]}
-            hideFooter={true}
-            onRowClick={(issue) => setSelectedIssue(issue)}
-          />
+          <div className="mt-4">
+            {isFetching ? (
+              <TableSkeleton rows={4} cols={5} />
+            ) : (
+              <Table
+                data={issues}
+                hideColumns={["created", "actions"]}
+                hideFooter={true}
+                onRowClick={(issue) => setSelectedIssue(issue)}
+              />
+            )}
+          </div>
         </div>
         <div className="col-span-2 space-y-3 mt-6 ">
           <h1 className="text-lg font-semibold text-(--color-text)">

@@ -13,6 +13,7 @@ import IssueModel from "./issue-model";
 import { toast } from "react-toastify";
 import IssueDetailsModal from "./issue-details-modal";
 import Swal from "sweetalert2";
+import TableSkeleton from "../components/ui/table-skeleton";
 
 const AllIssues = () => {
   const { data: users } = useGetAllUsersQuery();
@@ -43,16 +44,16 @@ const AllIssues = () => {
   ];
 
   useEffect(() => {
-  const handler = setTimeout(() => {
-    setDebouncedSearch(search);
-  }, 500); 
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
 
-  return () => {
-    clearTimeout(handler); 
-  };
-}, [search]);
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [search]);
 
-  const { data } = useGetIssuesQuery({
+  const { data, isFetching } = useGetIssuesQuery({
     page,
     limit: 6,
     ...(status !== "All" && { status }),
@@ -74,16 +75,16 @@ const AllIssues = () => {
 
   const handleDelete = async (id) => {
     const result = await Swal.fire({
-         title: "Delete Issue",
-         text: "Are you sure you want to delete this issue?",
-         icon: "warning",
-         showCancelButton: true,
-         confirmButtonColor: "#2563eb",
-         cancelButtonColor: "#8e8e9e",
-         confirmButtonText: "Yes, delete it",
-       });
+      title: "Delete Issue",
+      text: "Are you sure you want to delete this issue?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#2563eb",
+      cancelButtonColor: "#8e8e9e",
+      confirmButtonText: "Yes, delete it",
+    });
 
-      if (!result.isConfirmed) return;
+    if (!result.isConfirmed) return;
 
     try {
       const res = await deleteIssue(id).unwrap();
@@ -130,20 +131,25 @@ const AllIssues = () => {
           className="bg-(--color-surface)"
         />
       </div>
-
-      <Table
-        data={issues}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onRowClick={handleRowClick}
-        pagination={{
-          pageIndex: page - 1,
-          setPageIndex: (i) => setPage(i + 1),
-          pageSize: 8,
-          total: totalPages,
-        }}
-        setPageIndex={(i) => setPage(i + 1)}
-      />
+      <div className="mt-4">
+        {isFetching ? (
+          <TableSkeleton rows={6} />
+        ) : (
+          <Table
+            data={issues}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onRowClick={handleRowClick}
+            pagination={{
+              pageIndex: page - 1,
+              setPageIndex: (i) => setPage(i + 1),
+              pageSize: 8,
+              total: totalPages,
+            }}
+            setPageIndex={(i) => setPage(i + 1)}
+          />
+        )}
+      </div>
 
       <IssueModel
         open={open}
