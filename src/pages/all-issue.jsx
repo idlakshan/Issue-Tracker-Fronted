@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dropdown } from "../components/ui/dropdown";
 import { ISSUE_STATUS, ISSUE_PRIORITY } from "../constants/app-constants";
 import Table from "../components/ui/table";
@@ -13,6 +13,7 @@ import IssueModel from "./issue-model";
 import { toast } from "react-toastify";
 import IssueDetailsModal from "./issue-details-modal";
 import Swal from "sweetalert2";
+import TableSkeleton from "../components/ui/table-skeleton";
 
 const AllIssues = () => {
   const { data: users } = useGetAllUsersQuery();
@@ -21,6 +22,7 @@ const AllIssues = () => {
   const [priority, setPriority] = useState("ALL");
   const [assignee, setAssignee] = useState("ALL");
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [open, setOpen] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState(null);
@@ -41,13 +43,23 @@ const AllIssues = () => {
     })),
   ];
 
-  const { data } = useGetIssuesQuery({
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [search]);
+
+  const { data, isFetching } = useGetIssuesQuery({
     page,
     limit: 6,
     ...(status !== "All" && { status }),
     ...(priority !== "All" && { priority }),
     ...(assignee !== "All" && { assignee }),
-    ...(search.trim() && { search }),
+    ...(debouncedSearch.trim() && { search: debouncedSearch }),
   });
 
   //console.log(data);
@@ -63,16 +75,16 @@ const AllIssues = () => {
 
   const handleDelete = async (id) => {
     const result = await Swal.fire({
-         title: "Delete Issue",
-         text: "Are you sure you want to delete this issue?",
-         icon: "warning",
-         showCancelButton: true,
-         confirmButtonColor: "#2563eb",
-         cancelButtonColor: "#8e8e9e",
-         confirmButtonText: "Yes, delete it",
-       });
+      title: "Delete Issue",
+      text: "Are you sure you want to delete this issue?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#2563eb",
+      cancelButtonColor: "#8e8e9e",
+      confirmButtonText: "Yes, delete it",
+    });
 
-      if (!result.isConfirmed) return;
+    if (!result.isConfirmed) return;
 
     try {
       const res = await deleteIssue(id).unwrap();
@@ -119,20 +131,25 @@ const AllIssues = () => {
           className="bg-(--color-surface)"
         />
       </div>
-
-      <Table
-        data={issues}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onRowClick={handleRowClick}
-        pagination={{
-          pageIndex: page - 1,
-          setPageIndex: (i) => setPage(i + 1),
-          pageSize: 8,
-          total: totalPages,
-        }}
-        setPageIndex={(i) => setPage(i + 1)}
-      />
+      <div className="mt-4">
+        {isFetching ? (
+          <TableSkeleton rows={6} />
+        ) : (
+          <Table
+            data={issues}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onRowClick={handleRowClick}
+            pagination={{
+              pageIndex: page - 1,
+              setPageIndex: (i) => setPage(i + 1),
+              pageSize: 8,
+              total: totalPages,
+            }}
+            setPageIndex={(i) => setPage(i + 1)}
+          />
+        )}
+      </div>
 
       <IssueModel
         open={open}
