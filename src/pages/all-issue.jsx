@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dropdown } from "../components/ui/dropdown";
 import { ISSUE_STATUS, ISSUE_PRIORITY } from "../constants/app-constants";
 import Table from "../components/ui/table";
@@ -21,6 +21,7 @@ const AllIssues = () => {
   const [priority, setPriority] = useState("ALL");
   const [assignee, setAssignee] = useState("ALL");
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [open, setOpen] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState(null);
@@ -41,13 +42,23 @@ const AllIssues = () => {
     })),
   ];
 
+  useEffect(() => {
+  const handler = setTimeout(() => {
+    setDebouncedSearch(search);
+  }, 500); 
+
+  return () => {
+    clearTimeout(handler); 
+  };
+}, [search]);
+
   const { data } = useGetIssuesQuery({
     page,
     limit: 6,
     ...(status !== "All" && { status }),
     ...(priority !== "All" && { priority }),
     ...(assignee !== "All" && { assignee }),
-    ...(search.trim() && { search }),
+    ...(debouncedSearch.trim() && { search: debouncedSearch }),
   });
 
   //console.log(data);
