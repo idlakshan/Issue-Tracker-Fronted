@@ -1,17 +1,18 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
-const SidebarItem = ({ icon, label, count, to, active = false }) => {
+const SidebarItem = ({ icon, label, count, to, end  }) => {
   return (
-    <Link
+    <NavLink
       to={to}
-      className={`
-        flex items-center justify-between px-3 py-2 rounded-md cursor-pointer transition
+      end={end}
+      className={({ isActive }) =>
+        `flex items-center justify-between px-3 py-2 rounded-md cursor-pointer transition
         ${
-          active
+          isActive
             ? "bg-(--color-primary)/10 text-(--color-primary)"
             : "text-(--color-secondary-text) hover:bg-gray-100"
-        }
-      `}
+        }`
+      }
     >
       <div className="flex items-center gap-3">
         {icon}
@@ -23,7 +24,7 @@ const SidebarItem = ({ icon, label, count, to, active = false }) => {
           {count}
         </span>
       )}
-    </Link>
+    </NavLink>
   );
 };
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Dropdown } from "../components/ui/dropdown";
 import { ISSUE_STATUS, ISSUE_PRIORITY } from "../constants/app-constants";
 import Table from "../components/ui/table";
@@ -29,19 +29,18 @@ const AllIssues = () => {
   const [detailsOpen, setDetailsOpen] = useState(false);
 
   const [deleteIssue] = useDeleteIssueMutation();
-  const filteredUsers =
-    users?.data?.filter((user) => user.role !== "ADMIN") || [];
 
-  const assigneeOptions = [
-    {
-      label: "All Assignees",
-      value: "All",
-    },
-    ...filteredUsers.map((user) => ({
-      label: `${user.firstName} ${user.lastName}`,
-      value: user._id,
-    })),
-  ];
+  const assigneeOptions = useMemo(() => {
+    const filteredUsers =
+      users?.data?.filter((user) => user.role !== "ADMIN") || [];
+    return [
+      { label: "All Assignees", value: "All" },
+      ...filteredUsers.map((user) => ({
+        label: `${user.firstName} ${user.lastName}`,
+        value: user._id,
+      })),
+    ];
+  }, [users]);
 
   useEffect(() => {
     const handler = setTimeout(() => {

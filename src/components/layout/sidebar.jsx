@@ -2,13 +2,10 @@ import { LayoutDashboard, ListTodo, Users, ShieldHalf } from "lucide-react";
 import SidebarSection from "./sidebar-section";
 import SidebarItem from "./sidebar-item";
 import UserInfo from "./user-info";
-import { useLocation } from "react-router-dom";
 import { useGetIssueCountQuery } from "../../redux/api/issue-api";
 
 const Sidebar = () => {
-  const location = useLocation();
-  const currentPath = location.pathname;
-  const {data:counts} = useGetIssueCountQuery();
+  const { data: counts } = useGetIssueCountQuery();
 
   return (
     <aside className="w-64 bg-(--color-surface) border-r border-(--color-secondary-text)/10 flex flex-col justify-between shadow-xs">
@@ -28,14 +25,13 @@ const Sidebar = () => {
               icon={<LayoutDashboard size={18} />}
               label="Dashboard"
               to="/admin"
-              active={currentPath === "/admin"}
+              end
             />
             <SidebarItem
               icon={<ListTodo size={18} />}
               label="All Issues"
               count={counts?.data?.totalIssues}
               to="/admin/issues"
-              active={currentPath === "/admin/issues"}
             />
           </SidebarSection>
 
@@ -44,7 +40,6 @@ const Sidebar = () => {
               icon={<Users size={18} />}
               label="Assignees"
               to="/admin/assignees"
-              active={currentPath === "/admin/assignees"}
             />
           </SidebarSection>
         </div>
